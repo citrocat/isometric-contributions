@@ -1,9 +1,22 @@
+<div align="center">
+
 # 立体贡献图浏览器拓展程序
 
-[英文版](https://github.com/jasonlong/isometric-contributions/blob/main/README.md) | 中文版
+**把 GitHub 贡献图变成立体像素画。**
 
 ![Node.js CI](https://github.com/jasonlong/isometric-contributions/workflows/Node.js%20CI/badge.svg)
 [![XO 代码样式](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/xojs/xo)
+
+<p>
+  <a href="https://chrome.google.com/webstore/detail/isometric-contributions/mjoedlfflcchnleknnceiplgaeoegien?hl=en&gl=US"><img src="https://img.shields.io/badge/Install-Chrome%20%2F%20Brave-1a7f37?style=for-the-badge" alt="安装 Chrome / Brave 版本" /></a>
+  <a href="https://addons.mozilla.org/en-US/firefox/addon/github-isometric-contributions/"><img src="https://img.shields.io/badge/Install-Firefox-1a7f37?style=for-the-badge" alt="安装 Firefox 版本" /></a>
+</p>
+
+[英文版](https://github.com/jasonlong/isometric-contributions/blob/main/README.md) · **中文版**
+
+[效果预览](#效果预览) · [安装方式](#安装方式) · [贡献](#贡献) · [开源协议](#开源协议)
+
+</div>
 
 这是一个为 Chrome / Brave 和 Firefox 而量身打造的浏览器拓展程序，让你能够在 GitHub 用户档案页面的贡献图处，切换显示原生 2D 图与立体像素版贡献图。我们使用了 [obelisk.js](https://github.com/nosir/obelisk.js) 用于绘制立体图像。
 
@@ -13,7 +26,19 @@
 
 柱高按当前图中最大的每日贡献数进行线性缩放。如果 GitHub 只提供 `100+`，图表按已知下限 100 计算高度，浮窗保留 `100+`。由这类数据计算的总数和日均值也会带上 `+`，且无法确定精确的最佳日期。这里沿用 GitHub 的贡献统计口径，包含 commit 以外的贡献。
 
-<img src="img/preview.png" width="1052" />
+## 效果预览
+
+<div align="center">
+
+**浅色主题**
+
+<img src="img/preview.png" width="747" alt="浅色主题下高亮的贡献柱体，以及显示日期和贡献数的浮窗" />
+
+**深色主题**
+
+<img src="img/preview-dark.png" width="747" alt="深色主题下高亮的贡献柱体，以及显示日期和贡献数的浮窗" />
+
+</div>
 
 ## 安装方式
 
@@ -25,21 +50,25 @@
 
 [Install from Mozilla Add-ons site](https://addons.mozilla.org/en-US/firefox/addon/github-isometric-contributions/)
 
-#### GitHub Enterprise
+### GitHub Enterprise
 
 默认情况下，这个拓展程序只会渲染 `github.com` 上的贡献图，而我们可以点击拓展程序图标，选择 `Enable Isometric Contributions on this domain`，手动让拓展程序能够在我们的 Enterprise 版域名上显示。
 
-<img src="img/enterprise.png" width="396" />
+<img src="img/enterprise.png" width="396" alt="扩展菜单中的 Enable Isometric Contributions on this domain 选项" />
 
 ## 贡献
 
+### 1. 在本地加载扩展
+
 如果您想自定义扩展程序，那么你可能需要手动安装它。首先先克隆或分叉此仓库，然后，在 Chrome 扩展程序 页面上，选中 “开发人员模式，点击 “加载已解压缩的扩展程序……” 按钮，然后选定仓库所在的文件夹即可。
 
-<img src="img/dev-mode.png" width="981" />
+<img src="img/dev-mode.png" width="981" alt="Chrome 扩展程序页面中的开发者模式和加载已解压缩扩展程序入口" />
+
+### 2. 修改后重新加载
 
 要自定义该扩展程序，首先需要确保已在开发人员模式下安装了该扩展程序（参见上文）。对扩展程序进行更改后，请返回 “扩展程序” 页面，然后单击扩展程序条目下的 “重新加载” 链接。
 
-<img src="img/reload-link.png" width="410" />
+<img src="img/reload-link.png" width="410" alt="扩展程序条目下的重新加载链接" />
 
 如果你有什么改进的内容，请随时打开一个拉取请求。
 
