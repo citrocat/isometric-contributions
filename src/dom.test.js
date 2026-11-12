@@ -324,6 +324,24 @@ describe('parseCalendarGraph', () => {
     expect(result[2].count).toBe(3)
   })
 
+  it('preserves the original tooltip and whether its count is capped', () => {
+    const result = parseCalendarGraph(
+      [createDayElement('2026-11-11', '52', 'tip-capped')],
+      [
+        createTooltipElement(
+          'tip-capped',
+          '100+ contributions on November 11th.'
+        )
+      ],
+      () => '39d353'
+    )
+    expect(result[0]).toMatchObject({
+      count: 100,
+      countIsLowerBound: true,
+      tooltip: '100+ contributions on November 11th.'
+    })
+  })
+
   it('calls getColorFn for each day element', () => {
     const dayElements = [
       createDayElement('2024-01-01', '0', 'tip-1'),

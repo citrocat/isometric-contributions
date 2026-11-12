@@ -5,7 +5,9 @@
 
 This is a browser extension for Chrome/Brave and Firefox that lets you toggle between your regular GitHub contribution chart and an isometric pixel art version. It uses [obelisk.js](https://github.com/nosir/obelisk.js) for the isometric graphics.
 
-Besides being sort of neat looking, this view is interesting in that it highlights the differences between the number of contributions with more granularity. This isn't meant to completely replace the standard 2D graph though, because in most ways it is actually less useful. For example, there are no axis labels, shorter bars can be hidden behind taller ones, you can't hover over a bar to see the day and count, etc.
+The isometric view highlights differences in daily contributions. Hover over a visible bar to give it a subtle glow and see the same date and contribution count as GitHub's 2D tooltip. Shorter bars can still be hidden behind taller ones.
+
+Heights are scaled linearly against the largest visible daily count. When GitHub reports a capped count such as `100+`, the chart uses 100 as a lower bound and keeps `100+` in the tooltip. Totals and averages calculated from capped counts are also marked with `+`; the exact best day cannot be determined from these counts. Contributions follow GitHub's calendar and include more than commits.
 
 <img src="img/preview.png" width="1052" />
 

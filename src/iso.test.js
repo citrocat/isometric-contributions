@@ -1,8 +1,16 @@
 /** @vitest-environment jsdom */
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
+import { createIsometricChart } from './chart.js'
 import { fetchExtendedStreakData } from './history.js'
 
 vi.mock('./history.js', () => ({ fetchExtendedStreakData: vi.fn() }))
+vi.mock('./chart.js', () => ({
+  createIsometricChart: vi.fn(() => ({
+    render: vi.fn(),
+    clearHover: vi.fn(),
+    destroy: vi.fn()
+  }))
+}))
 
 const day = (date, count = 1) => ({ date: new Date(date), count })
 const showCalendar = (days) => {
@@ -38,20 +46,6 @@ beforeEach(() => {
       disconnect() {}
     }
   )
-  vi.stubGlobal('obelisk', {
-    Point: class {},
-    Point3D: class {},
-    PixelView: class {
-      renderObject() {}
-    },
-    CubeDimension: class {},
-    CubeColor: class {
-      getByHorizontalColor() {
-        return 0
-      }
-    },
-    Cube: class {}
-  })
   window.history.replaceState(null, '', '/old-profile')
 })
 
@@ -88,6 +82,7 @@ it.each(['another profile', 'another year on the same profile'])(
       expect(fetchExtendedStreakData).toHaveBeenCalledTimes(1)
     )
     const oldSignal = fetchExtendedStreakData.mock.calls[0][3]
+    const oldChart = createIsometricChart.mock.results[0].value
     window.history.replaceState(
       null,
       '',
@@ -98,6 +93,7 @@ it.each(['another profile', 'another year on the same profile'])(
     const newDays = [day('2023-01-01')]
     showCalendar(newDays)
     onNavigate()
+    expect(oldChart.destroy).toHaveBeenCalledOnce()
     expect(oldSignal.aborted).toBe(true)
     expect(fetchExtendedStreakData).toHaveBeenCalledTimes(2)
 
@@ -155,4 +151,26 @@ it('skips historical requests when the first visible day is inactive', async () 
     )
   )
   expect(fetchExtendedStreakData).not.toHaveBeenCalled()
+})
+
+it('renders capped days as active, and labels aggregate counts as lower bounds', async () => {
+  showCalendar([day('2026-11-10', 86), day('2026-11-11', '100+')])
+  fetchExtendedStreakData.mockResolvedValueOnce([
+    day('2026-11-10', 86),
+    day('2026-11-11', 100)
+  ])
+  await import('./iso.js')
+  await vi.waitFor(() => expect(createIsometricChart).toHaveBeenCalledOnce())
+  const chart = createIsometricChart.mock.results[0].value
+  const [weeks, maxCount] = chart.render.mock.calls[0]
+  expect(maxCount).toBe(100)
+  expect(weeks[0][1]).toMatchObject({ count: 100, countIsLowerBound: true })
+  const stats = document.querySelector('.ic-contributions-wrapper').textContent
+  expect(stats).toContain('186+')
+  expect(stats).toContain('100+')
+  expect(stats).toContain('93+')
+  expect(stats).toContain('Exact date unavailable')
+  expect(document.getElementById('ic-streak-current-count').textContent).toBe(
+    '2 days'
+  )
 })

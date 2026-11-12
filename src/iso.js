@@ -1,3 +1,4 @@
+import { createIsometricChart } from './chart.js'
 import { fetchExtendedStreakData } from './history.js'
 import {
   applyViewType,
@@ -55,6 +56,8 @@ let dateBest = null
 let toggleSetting = 'cubes'
 let chartGeneration = 0
 let historyRequest = null
+let chart = null
+let hasCappedCounts = false
 
 const cancelHistoryRequest = () => {
   chartGeneration++
@@ -184,6 +187,7 @@ const initUI = () => {
   canvas.height = 600
   canvas.style.width = '100%'
   contributionsWrapper.append(canvas)
+  chart = createIsometricChart(canvas)
 
   // Inject toggle
   const heading = contributionsBox.querySelector('h2')
@@ -258,6 +262,7 @@ const handleViewToggle = (event) => {
 }
 
 const setContainerViewType = (type) => {
+  chart?.clearHover()
   applyViewType(contributionsBox, type)
 }
 
@@ -286,6 +291,7 @@ const loadStats = () => {
   )
 
   days = parseCalendarGraph(dayElements, tooltipElements, getSquareColor)
+  hasCappedCounts = days.some((day) => day.countIsLowerBound)
   weeks = Object.values(
     days.reduce((acc, day) => {
       const key = day.week
@@ -335,16 +341,20 @@ const loadStats = () => {
   }
 
   // Year total
-  countTotal = yearTotal.toLocaleString()
+  countTotal = `${yearTotal.toLocaleString()}${hasCappedCounts ? '+' : ''}`
   const dateLast = dateFormat.format(lastDay)
   datesTotal = `${dateFormat.format(firstDay)} → ${dateLast}`
 
   // Average contributions per day
-  const dayDifference = datesDayDifference(firstDay, lastDay)
-  averageCount = precisionRound(yearTotal / dayDifference, 2)
+  const dayDifference = datesDayDifference(firstDay, lastDay) + 1
+  averageCount = `${precisionRound(yearTotal / dayDifference, 2)}${hasCappedCounts ? '+' : ''}`
 
   // Best day
-  dateBest = bestDay ? dateFormat.format(bestDay) : 'No activity found'
+  dateBest = hasCappedCounts
+    ? 'Exact date unavailable'
+    : bestDay
+      ? dateFormat.format(bestDay)
+      : 'No activity found'
 
   // Longest streak
   if (streakLongest > 0) {
@@ -358,47 +368,13 @@ const loadStats = () => {
   }
 
   // Week total
-  weekCountTotal = weekTotal.toLocaleString()
+  weekCountTotal = `${weekTotal.toLocaleString()}${currentWeekDays.some((day) => day.countIsLowerBound) ? '+' : ''}`
   const weekDateFirst = dateFormat.format(weekStartDay)
   weekDatesTotal = `${weekDateFirst} → ${dateLast}`
 }
 
 const renderIsometricChart = () => {
-  const SIZE = 16
-  const MAX_HEIGHT = 100
-  const GH_OFFSET = 14
-  const canvas = document.querySelector('#isometric-contributions')
-  const point = new obelisk.Point(130, 90)
-  const pixelView = new obelisk.PixelView(canvas, point)
-
-  let transform = GH_OFFSET
-
-  for (const w of weeks) {
-    const x = transform / (GH_OFFSET + 1)
-    transform += GH_OFFSET
-    let offsetY = 0 // Hardcode the old y of rect value.
-    for (const d of w) {
-      const y = offsetY / GH_OFFSET
-      offsetY += 13
-      const currentDayCount = d.count
-      let cubeHeight = 3
-
-      if (maxCount > 0) {
-        cubeHeight += Number.parseInt(
-          (MAX_HEIGHT / maxCount) * currentDayCount,
-          10
-        )
-      }
-
-      const dimension = new obelisk.CubeDimension(SIZE, SIZE, cubeHeight)
-      const color = new obelisk.CubeColor().getByHorizontalColor(
-        Number.parseInt(d.color, 16)
-      )
-      const cube = new obelisk.Cube(dimension, color, false)
-      const p3d = new obelisk.Point3D(SIZE * x, SIZE * y, 0)
-      pixelView.renderObject(cube, p3d)
-    }
-  }
+  chart.render(weeks, maxCount)
 }
 
 const renderStats = () => {
@@ -411,7 +387,7 @@ const renderStats = () => {
     datesTotal,
     weekCountTotal,
     weekDatesTotal,
-    maxCount,
+    maxCount: `${maxCount}${hasCappedCounts ? '+' : ''}`,
     dateBest,
     averageCount
   }
@@ -468,6 +444,8 @@ const generateIsometricChart = () => {
 
   const setupObserver = () => {
     cancelHistoryRequest()
+    chart?.destroy()
+    chart = null
     if (!document.querySelector('.vcard-names-container')) {
       return
     }

@@ -58,18 +58,23 @@ export const sameDay = (d1, d2) => d1.toDateString() === d2.toDateString()
  * - "No contributions on January 9th"
  * - "1 contribution on January 10th."
  * - "2 contributions on August 31st."
+ * - "100+ contributions on November 12th." (a lower bound)
+ * - "1,234 contributions on January 1st."
  * @param {string} text - The tooltip text content
  * @returns {number} The contribution count (0 if no match or "No contributions")
  */
+const matchContributionCount = (text) =>
+  text.match(/\b(No|\d[\d,]*)(\+)? contributions? on\b/)
+
 export const getContributionCount = (text) => {
-  const contributionMatches = text.match(/(\d+|No) contributions? on/)
+  const contributionMatches = matchContributionCount(text)
   if (!contributionMatches) {
     return 0
   }
 
   return contributionMatches[1] === 'No'
     ? 0
-    : Number.parseInt(contributionMatches[1], 10)
+    : Number.parseInt(contributionMatches[1].replaceAll(',', ''), 10)
 }
 
 /**
@@ -217,7 +222,9 @@ export const parseCalendarGraph = (
 
   const tooltipNodes = [...tooltipElements].map((t) => ({
     tid: t.id,
-    count: getContributionCount(t.textContent)
+    count: getContributionCount(t.textContent),
+    countIsLowerBound: Boolean(matchContributionCount(t.textContent)?.[2]),
+    tooltip: t.textContent.trim()
   }))
 
   const data = dayNodes.map((d) => ({

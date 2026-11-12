@@ -149,6 +149,14 @@ describe('getContributionCount', () => {
     )
   })
 
+  it.each([
+    ['100+ contributions on November 12th.', 100],
+    ['1,234 contributions on January 1st.', 1234],
+    ['1,000+ contributions on January 2nd.', 1000]
+  ])('parses capped and thousands-separated counts: %s', (text, count) => {
+    expect(getContributionCount(text)).toBe(count)
+  })
+
   it('returns 0 for non-matching text', () => {
     expect(getContributionCount('Some random text')).toBe(0)
     expect(getContributionCount('')).toBe(0)

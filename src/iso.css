@@ -15,3 +15,24 @@
 }
 
 /* Both display - no hiding needed, both are visible by default */
+
+.ic-contribution-tooltip {
+  position: absolute;
+  z-index: 10;
+  width: max-content;
+  max-width: 100%;
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: var(--bgColor-emphasis, #25292e);
+  color: var(--fgColor-onEmphasis, #fff);
+  box-shadow: 0 2px 8px #0003;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: center;
+  pointer-events: none;
+}
+
+.ic-contribution-tooltip[hidden] {
+  display: none;
+}
