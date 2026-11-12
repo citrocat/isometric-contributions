@@ -7,6 +7,8 @@ This is a browser extension for Chrome/Brave and Firefox that lets you toggle be
 
 The isometric view highlights differences in daily contributions. Hover over a visible bar to give it a subtle glow and see the same date and contribution count as GitHub's 2D tooltip. Shorter bars can still be hidden behind taller ones.
 
+In 2D and Both views, calendar squares also get a subtle outline and glow on hover or keyboard focus, while keeping GitHub's native colors and tooltips.
+
 Heights are scaled linearly against the largest visible daily count. When GitHub reports a capped count such as `100+`, the chart uses 100 as a lower bound and keeps `100+` in the tooltip. Totals and averages calculated from capped counts are also marked with `+`; the exact best day cannot be determined from these counts. Contributions follow GitHub's calendar and include more than commits.
 
 <img src="img/preview.png" width="1052" />

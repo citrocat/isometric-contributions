@@ -16,6 +16,17 @@
 
 /* Both display - no hiding needed, both are visible by default */
 
+/* Keep GitHub's native cell colors and tooltip; only emphasize the active cell. */
+:is(.ic-squares, .ic-both)
+  .js-calendar-graph-table
+  td.ContributionCalendar-day[data-date]:is(:hover, :focus-visible) {
+  position: relative;
+  z-index: 1;
+  box-shadow:
+    0 0 0 1px var(--fgColor-success, #1a7f37),
+    0 0 5px 1px #2da44e55;
+}
+
 .ic-contribution-tooltip {
   position: absolute;
   z-index: 10;
